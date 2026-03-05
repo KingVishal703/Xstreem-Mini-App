@@ -1,80 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>XStream</title>
-
+<meta charset="UTF-8">
+<title>XStream Mini App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{
-background:black;
-color:white;
-text-align:center;
-font-family:sans-serif;
-margin-top:100px;
+  background:black;
+  color:white;
+  text-align:center;
+  font-family:sans-serif;
+  margin-top:100px;
 }
-
 button{
-padding:15px 30px;
-margin:10px;
-font-size:18px;
-border:none;
-border-radius:8px;
-cursor:pointer;
+  padding:15px 30px;
+  margin:10px;
+  font-size:18px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
 }
-
 .watch{
-background:#ff0033;
-color:white;
+  background:#ff0033;
+  color:white;
 }
-
 .download{
-background:#0099ff;
-color:white;
+  background:#0099ff;
+  color:white;
+}
+.ads{
+  margin:20px;
+  padding:10px;
+  border:1px dashed #555;
 }
 </style>
-
 </head>
-
 <body>
 
-<h2>Watch Video</h2>
+<h2>🎬 XStream Mini App</h2>
 
-<button class="watch" onclick="watch()">🎬 Watch Now</button>
+<!-- AD TOP -->
+<div class="ads">AD SPACE TOP</div>
 
+<button class="watch" onclick="watch()">▶ Watch Now</button>
 <br>
-
 <button class="download" onclick="download()">⬇ Download</button>
 
+<!-- AD BOTTOM -->
+<div class="ads">AD SPACE BOTTOM</div>
+
 <script>
+const WATCH_BASE = "https://select-hedwiga-movies1234-cf0c3d02.koyeb.app/watch/"
+const DOWNLOAD_BASE = "https://select-hedwiga-movies1234-cf0c3d02.koyeb.app/"
 
-const watch_base = "https://opposite-juline-movies1234-531abe64.koyeb.app/watch/"
-const download_base = "https://opposite-juline-movies1234-531abe64.koyeb.app/"
-
+// Get the code from URL path
 const code = window.location.pathname.substring(1)
 
+// Decode Base64 safe string
 function decode(str){
-return atob(str.replace(/-/g,'+').replace(/_/g,'/'))
+  try{
+    return atob(str.replace(/-/g,'+').replace(/_/g,'/'))
+  } catch(e){
+    alert("Invalid link")
+    return ""
+  }
 }
 
+// Watch button
 function watch(){
-
-const decoded = decode(code)
-
-const final = watch_base + decoded
-
-window.location.href = final
-
+  const decoded = decode(code)
+  if(decoded) window.location.href = WATCH_BASE + decoded
 }
 
+// Download button
 function download(){
-
-const decoded = decode(code)
-
-const final = download_base + decoded
-
-window.location.href = final
-
+  const decoded = decode(code)
+  if(decoded) window.location.href = DOWNLOAD_BASE + decoded
 }
-
 </script>
 
 </body>
