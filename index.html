@@ -2,17 +2,52 @@
 <html>
 <head>
 <title>XStream</title>
+
+<style>
+body{
+background:black;
+color:white;
+text-align:center;
+font-family:sans-serif;
+margin-top:100px;
+}
+
+button{
+padding:15px 30px;
+margin:10px;
+font-size:18px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.watch{
+background:#ff0033;
+color:white;
+}
+
+.download{
+background:#0099ff;
+color:white;
+}
+</style>
+
 </head>
 
-<body style="background:black;color:white;text-align:center">
+<body>
 
 <h2>Watch Video</h2>
 
-<button onclick="play()">▶ Watch Now</button>
+<button class="watch" onclick="watch()">🎬 Watch Now</button>
+
+<br>
+
+<button class="download" onclick="download()">⬇ Download</button>
 
 <script>
 
-const base = "https://opposite-juline-movies1234-531abe64.koyeb.app/"
+const watch_base = "https://opposite-juline-movies1234-531abe64.koyeb.app/watch/"
+const download_base = "https://opposite-juline-movies1234-531abe64.koyeb.app/"
 
 const code = window.location.pathname.substring(1)
 
@@ -20,11 +55,21 @@ function decode(str){
 return atob(str.replace(/-/g,'+').replace(/_/g,'/'))
 }
 
-function play(){
+function watch(){
 
 const decoded = decode(code)
 
-const final = base + decoded
+const final = watch_base + decoded
+
+window.location.href = final
+
+}
+
+function download(){
+
+const decoded = decode(code)
+
+const final = download_base + decoded
 
 window.location.href = final
 
