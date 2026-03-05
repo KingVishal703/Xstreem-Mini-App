@@ -1,39 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-<meta charset="UTF-8">
-<title>XStream Player</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+<title>XStream</title>
 
 <style>
 
 body{
-background:#0b0b0b;
+background:black;
 color:white;
-font-family:sans-serif;
 text-align:center;
-margin:0;
-padding:0;
-}
-
-.player{
-width:90%;
-max-width:900px;
-margin:auto;
-margin-top:40px;
-}
-
-video{
-width:100%;
-border-radius:10px;
-}
-
-.buttons{
-margin-top:30px;
+font-family:sans-serif;
+margin-top:120px;
 }
 
 button{
@@ -41,7 +18,7 @@ padding:15px 30px;
 margin:10px;
 font-size:18px;
 border:none;
-border-radius:10px;
+border-radius:8px;
 cursor:pointer;
 }
 
@@ -57,8 +34,6 @@ color:white;
 
 .ads{
 margin:20px;
-padding:10px;
-border:1px dashed #555;
 }
 
 </style>
@@ -67,41 +42,23 @@ border:1px dashed #555;
 
 <body>
 
-<h2>🎬 XStream Video Player</h2>
+<h2>🎬 Watch Video</h2>
 
-<div class="player">
-
-<video id="player" controls>
-</video>
-
-</div>
-
-
-<!-- ADS TOP -->
-
+<!-- AD TOP -->
 <div class="ads">
-AD SPACE (TOP)
+AD SPACE TOP
 </div>
 
-
-<div class="buttons">
-
-<button class="watch" onclick="watch()">▶ Watch Now</button>
+<button class="watch" onclick="watch()">🎬 Watch Now</button>
 
 <br>
 
 <button class="download" onclick="download()">⬇ Download</button>
 
-</div>
-
-
-<!-- ADS BOTTOM -->
-
+<!-- AD BOTTOM -->
 <div class="ads">
-AD SPACE (BOTTOM)
+AD SPACE BOTTOM
 </div>
-
-
 
 <script>
 
@@ -111,29 +68,36 @@ const download_base = "https://opposite-juline-movies1234-531abe64.koyeb.app/"
 const code = window.location.pathname.substring(1)
 
 function decode(str){
+try{
 return atob(str.replace(/-/g,'+').replace(/_/g,'/'))
+}catch{
+return ""
 }
-
-const decoded = decode(code)
-
-const video_url = watch_base + decoded
-
-document.getElementById("player").src = video_url
-
+}
 
 function watch(){
 
-const final = watch_base + decoded
+const decoded = decode(code)
 
-window.location.href = final
+if(!decoded){
+alert("Invalid Link")
+return
+}
+
+window.location.href = watch_base + decoded
 
 }
 
 function download(){
 
-const final = download_base + decoded
+const decoded = decode(code)
 
-window.location.href = final
+if(!decoded){
+alert("Invalid Link")
+return
+}
+
+window.location.href = download_base + decoded
 
 }
 
