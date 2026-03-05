@@ -39,43 +39,40 @@ button{
 
 <h2>🎬 XStream Mini App</h2>
 
-<!-- AD TOP -->
 <div class="ads">AD SPACE TOP</div>
 
 <button class="watch" onclick="watch()">▶ Watch Now</button>
 <br>
 <button class="download" onclick="download()">⬇ Download</button>
 
-<!-- AD BOTTOM -->
 <div class="ads">AD SPACE BOTTOM</div>
 
 <script>
 const WATCH_BASE = "https://select-hedwiga-movies1234-cf0c3d02.koyeb.app/watch/"
 const DOWNLOAD_BASE = "https://select-hedwiga-movies1234-cf0c3d02.koyeb.app/"
 
-// Get the code from URL path
 const code = window.location.pathname.substring(1)
 
-// Decode Base64 safe string
+// URL-safe Base64 decode with padding fix
 function decode(str){
-  try{
-    return atob(str.replace(/-/g,'+').replace(/_/g,'/'))
-  } catch(e){
-    alert("Invalid link")
-    return ""
-  }
+    try{
+        let s = str.replace(/-/g,'+').replace(/_/g,'/')
+        while(s.length % 4) s += '=' // add padding if missing
+        return atob(s)
+    } catch(e){
+        alert("Invalid link")
+        return ""
+    }
 }
 
-// Watch button
 function watch(){
-  const decoded = decode(code)
-  if(decoded) window.location.href = WATCH_BASE + decoded
+    const decoded = decode(code)
+    if(decoded) window.location.href = WATCH_BASE + decoded
 }
 
-// Download button
 function download(){
-  const decoded = decode(code)
-  if(decoded) window.location.href = DOWNLOAD_BASE + decoded
+    const decoded = decode(code)
+    if(decoded) window.location.href = DOWNLOAD_BASE + decoded
 }
 </script>
 
