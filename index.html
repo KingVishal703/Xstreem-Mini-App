@@ -1,49 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Watch Video</title>
-<style>
-body{
-font-family:sans-serif;
-text-align:center;
-margin-top:100px;
-}
-button{
-padding:15px 30px;
-font-size:18px;
-}
-</style>
+<title>XStream</title>
 </head>
 
-<body>
+<body style="background:black;color:white;text-align:center">
 
 <h2>Watch Video</h2>
-<p>Please wait 5 seconds...</p>
 
-<button id="watch" disabled>Watch Now</button>
+<button onclick="play()">▶ Watch Now</button>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const stream = params.get("stream");
 
-let time = 5;
+const base = "https://opposite-juline-movies1234-531abe64.koyeb.app/"
 
-const btn = document.getElementById("watch");
+const code = window.location.pathname.substring(1)
 
-let timer = setInterval(()=>{
-time--;
-if(time<=0){
-btn.disabled=false;
-btn.innerText="Watch Now";
-clearInterval(timer);
-}else{
-btn.innerText="Wait "+time+"s";
+function decode(str){
+return atob(str.replace(/-/g,'+').replace(/_/g,'/'))
 }
-},1000);
 
-btn.onclick = ()=>{
-window.location.href = stream;
-};
+function play(){
+
+const decoded = decode(code)
+
+const final = base + decoded
+
+window.location.href = final
+
+}
+
 </script>
 
 </body>
