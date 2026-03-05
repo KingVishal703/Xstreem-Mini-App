@@ -1,32 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Watch Video</title>
+<meta charset="UTF-8" />
+<title>X_stream_Links | Mini Ad Gateway</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="https://img.sanishtech.com/u/62e636411ff87f8ccbdd9eb50eb18279.png" type="image/x-icon">
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://av-botz.vercel.app/2626/style.css">
+
+<style>
+/* Mini App specific styles */
+body { text-align:center; background:#111; color:white; font-family: 'Outfit', sans-serif; }
+.ad-container { margin-top:50px; background:#1c1c1c; padding:30px; border-radius:15px; display:inline-block; }
+#timer { font-weight:bold; font-size:1.5rem; color: var(--accent-color, #ff3d00);}
+#watchBtn { margin-top:20px; }
+</style>
 </head>
 
 <body>
 
-<div class="container">
-
+<div class="ad-container anim-entry">
 <h2>Advertisement</h2>
 
-<div class="ad-box">
-<!-- Adsgram / video ad code here -->
-<p>Ad is playing...</p>
-</div>
+<!-- Placeholder for video ad -->
+<video id="adVideo" width="100%" autoplay muted playsinline>
+    <source src="https://av-botz.vercel.app/ads/sample_ad.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
 
 <p>Wait <span id="timer">5</span> seconds</p>
 
-<button id="watchBtn" disabled>Watch Now</button>
-
+<button id="watchBtn" class="btn-glass btn-lg" disabled>
+<i class="fa-solid fa-play"></i> Watch Now
+</button>
 </div>
 
-<script src="script.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+/* Mini App Ad Timer + Redirect */
+const params = new URLSearchParams(window.location.search);
+const fileId = params.get("id") || "sample";
+const streamLink = "https://abc.koyeb.app/watch/" + fileId; // Replace with dynamic link from bot
+
+let time = 5;
+const timer = document.getElementById("timer");
+const watchBtn = document.getElementById("watchBtn");
+
+const countdown = setInterval(() => {
+    time--;
+    timer.innerText = time;
+    if(time <= 0){
+        clearInterval(countdown);
+        watchBtn.disabled = false;
+    }
+},1000);
+
+watchBtn.onclick = () => {
+    if(window.Telegram && Telegram.WebApp){
+        Telegram.WebApp.openLink(streamLink); // Opens in Chrome / external browser
+    }else{
+        window.open(streamLink,"_blank");
+    }
+};
+</script>
 
 </body>
 </html>
