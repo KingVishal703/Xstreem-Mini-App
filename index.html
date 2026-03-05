@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <title>XStream Player</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 
@@ -14,16 +14,17 @@
 body{
 background:#0b0b0b;
 color:white;
-font-family:Arial;
+font-family:sans-serif;
 text-align:center;
-padding:20px;
+margin:0;
+padding:0;
 }
 
-.player-box{
+.player{
+width:90%;
 max-width:900px;
 margin:auto;
-border-radius:10px;
-overflow:hidden;
+margin-top:40px;
 }
 
 video{
@@ -32,15 +33,15 @@ border-radius:10px;
 }
 
 .buttons{
-margin-top:20px;
+margin-top:30px;
 }
 
-.btn{
-padding:14px 25px;
-margin:6px;
+button{
+padding:15px 30px;
+margin:10px;
+font-size:18px;
 border:none;
-border-radius:8px;
-font-size:16px;
+border-radius:10px;
 cursor:pointer;
 }
 
@@ -54,9 +55,10 @@ background:#0099ff;
 color:white;
 }
 
-.title{
-font-size:22px;
-margin-bottom:15px;
+.ads{
+margin:20px;
+padding:10px;
+border:1px dashed #555;
 }
 
 </style>
@@ -65,27 +67,41 @@ margin-bottom:15px;
 
 <body>
 
-<div class="title">🎬 XStream Video Player</div>
+<h2>🎬 XStream Video Player</h2>
 
-<div class="player-box">
-<video id="player" playsinline controls>
-<source id="videosrc" src="" type="video/mp4">
+<div class="player">
+
+<video id="player" controls>
 </video>
+
 </div>
+
+
+<!-- ADS TOP -->
+
+<div class="ads">
+AD SPACE (TOP)
+</div>
+
 
 <div class="buttons">
 
-<button class="btn watch" onclick="watch()">
-▶ Watch in Browser
-</button>
+<button class="watch" onclick="watch()">▶ Watch Now</button>
 
-<button class="btn download" onclick="download()">
-⬇ Download Video
-</button>
+<br>
+
+<button class="download" onclick="download()">⬇ Download</button>
 
 </div>
 
-<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+
+<!-- ADS BOTTOM -->
+
+<div class="ads">
+AD SPACE (BOTTOM)
+</div>
+
+
 
 <script>
 
@@ -100,19 +116,25 @@ return atob(str.replace(/-/g,'+').replace(/_/g,'/'))
 
 const decoded = decode(code)
 
-const watch_url = watch_base + decoded
-const download_url = download_base + decoded
+const video_url = watch_base + decoded
 
-document.getElementById("videosrc").src = watch_url
+document.getElementById("player").src = video_url
 
-const player = new Plyr('#player')
 
 function watch(){
-window.location.href = watch_url
+
+const final = watch_base + decoded
+
+window.location.href = final
+
 }
 
 function download(){
-window.location.href = download_url
+
+const final = download_base + decoded
+
+window.location.href = final
+
 }
 
 </script>
