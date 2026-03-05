@@ -4,13 +4,12 @@
 <title>XStream</title>
 
 <style>
-
 body{
 background:black;
 color:white;
 text-align:center;
 font-family:sans-serif;
-margin-top:120px;
+margin-top:100px;
 }
 
 button{
@@ -31,34 +30,19 @@ color:white;
 background:#0099ff;
 color:white;
 }
-
-.ads{
-margin:20px;
-}
-
 </style>
 
 </head>
 
 <body>
 
-<h2>🎬 Watch Video</h2>
-
-<!-- AD TOP -->
-<div class="ads">
-AD SPACE TOP
-</div>
+<h2>Watch Video</h2>
 
 <button class="watch" onclick="watch()">🎬 Watch Now</button>
 
 <br>
 
 <button class="download" onclick="download()">⬇ Download</button>
-
-<!-- AD BOTTOM -->
-<div class="ads">
-AD SPACE BOTTOM
-</div>
 
 <script>
 
@@ -68,23 +52,16 @@ const download_base = "https://opposite-juline-movies1234-531abe64.koyeb.app/"
 const code = window.location.pathname.substring(1)
 
 function decode(str){
-try{
 return atob(str.replace(/-/g,'+').replace(/_/g,'/'))
-}catch{
-return ""
-}
 }
 
 function watch(){
 
 const decoded = decode(code)
 
-if(!decoded){
-alert("Invalid Link")
-return
-}
+const final = watch_base + decoded
 
-window.location.href = watch_base + decoded
+window.location.href = final
 
 }
 
@@ -92,12 +69,9 @@ function download(){
 
 const decoded = decode(code)
 
-if(!decoded){
-alert("Invalid Link")
-return
-}
+const final = download_base + decoded
 
-window.location.href = download_base + decoded
+window.location.href = final
 
 }
 
