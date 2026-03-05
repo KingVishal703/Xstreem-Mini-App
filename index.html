@@ -1,32 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>XStream</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>XStream Player</title>
+
+<style>
+
+body{
+background:#0f0f0f;
+color:white;
+font-family:sans-serif;
+text-align:center;
+padding-top:80px;
+}
+
+button{
+padding:14px 25px;
+margin:10px;
+font-size:18px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.watch{
+background:#ff0033;
+color:white;
+}
+
+.download{
+background:#0099ff;
+color:white;
+}
+
+</style>
+
 </head>
+<body>
 
-<body style="background:black;color:white;text-align:center">
+<h2>🎬 Open Video</h2>
 
-<h2>Watch Video</h2>
+<button class="watch" onclick="watch()">Watch Now</button>
 
-<button onclick="play()">▶ Watch Now</button>
+<button class="download" onclick="download()">Download</button>
+
 
 <script>
 
-const base = "https://opposite-juline-movies1234-531abe64.koyeb.app/"
+const BASE = "https://opposite-juline-movies1234-531abe64.koyeb.app/";
 
-const code = window.location.pathname.substring(1)
+const path = window.location.pathname.replace("/","")
 
 function decode(str){
-return atob(str.replace(/-/g,'+').replace(/_/g,'/'))
+return atob(str.replace(/_/g,'/').replace(/-/g,'+'))
 }
 
-function play(){
+let decoded = decode(path)
 
-const decoded = decode(code)
+function watch(){
 
-const final = base + decoded
+window.location.href = BASE + "watch/" + decoded
 
-window.location.href = final
+}
+
+function download(){
+
+window.location.href = BASE + decoded
 
 }
 
