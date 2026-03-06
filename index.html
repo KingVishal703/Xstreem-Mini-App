@@ -1,196 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src='//libtl.com/sdk.js' data-zone='10689414' data-sdk='show_10689414'></script>
 <meta charset="UTF-8">
 <title>XStream Mini App</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- LibTL SDK for Rewarded Interstitial / Popup / In-App -->
+<script src='//libtl.com/sdk.js' data-zone='10689414' data-sdk='show_10689414'></script>
+
 <style>
-
-body{
-background:#0b0b0b;
-color:white;
-text-align:center;
-font-family:sans-serif;
-margin:0;
-padding:0;
-}
-
-.container{
-margin-top:80px;
-}
-
-button{
-padding:15px 30px;
-margin:10px;
-font-size:18px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-button:disabled{
-opacity:0.4;
-cursor:not-allowed;
-}
-
-.watch{
-background:#ff0033;
-color:white;
-}
-
-.download{
-background:#0099ff;
-color:white;
-}
-
-.ads{
-margin:20px;
-padding:10px;
-border:1px dashed #555;
-}
-
-/* TIMER */
-
-.timer{
-margin-top:20px;
-font-size:20px;
-color:#00ffc3;
-font-weight:bold;
-}
-
-/* SPINNER */
-
-.spinner{
-margin:15px auto;
-width:40px;
-height:40px;
-border:4px solid #333;
-border-top:4px solid #00ffc3;
-border-radius:50%;
-animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-0%{transform:rotate(0deg);}
-100%{transform:rotate(360deg);}
-}
-
-/* FOOTER */
-
-footer{
-margin-top:80px;
-padding:20px;
-border-top:1px solid #333;
-font-size:14px;
-color:#aaa;
-}
-
-footer a{
-color:#00ffc3;
-text-decoration:none;
-margin:0 8px;
-}
-
-.description{
-max-width:700px;
-margin:auto;
-margin-top:20px;
-font-size:15px;
-color:#ccc;
-line-height:1.6;
-}
-
+body{background:#0b0b0b;color:white;text-align:center;font-family:sans-serif;margin:0;padding:0;}
+button{padding:15px 30px;margin:10px;font-size:18px;border:none;border-radius:8px;cursor:pointer;}
+button:disabled{opacity:0.4;cursor:not-allowed;}
+.watch{background:#ff0033;color:white;}
+.download{background:#0099ff;color:white;}
+.timer{margin-top:20px;font-size:20px;color:#00ffc3;font-weight:bold;}
+.spinner{margin:15px auto;width:40px;height:40px;border:4px solid #333;border-top:4px solid #00ffc3;border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+footer{margin-top:80px;padding:20px;border-top:1px solid #333;font-size:14px;color:#aaa;}
+footer a{color:#00ffc3;text-decoration:none;margin:0 8px;}
+.description{max-width:700px;margin:auto;margin-top:20px;font-size:15px;color:#ccc;line-height:1.6;}
 </style>
 </head>
 <body>
+
 <h2>🎬 XStream Mini App</h2>
 
-  <script>
-  atOptions = {
-    'key' : '61b24b1ac71c48d132a12aaab9d27fed',
-    'format' : 'iframe',
-    'height' : 50,
-    'width' : 320,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/61b24b1ac71c48d132a12aaab9d27fed/invoke.js"></script>
-
 <div class="description">
-This page redirects you to the secure video streaming player.
+This page redirects you to the secure video streaming player.<br>
 Please wait a few seconds before accessing the watch or download options.
 </div>
 
-<div class="ads"><script>
-  atOptions = {
-    'key' : '61b24b1ac71c48d132a12aaab9d27fed',
-    'format' : 'iframe',
-    'height' : 50,
-    'width' : 320,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/61b24b1ac71c48d132a12aaab9d27fed/invoke.js"></script></div>
-
-  <script src="https://pl28855657.effectivegatecpm.com/d1/ef/4d/d1ef4d0ef792b332833fbe5ce76733ca.js"></script>
-  
-<div class="timer">
-⏳ Preparing your link... <span id="time">10</span>s
-</div>
-
+<div class="timer">⏳ Preparing your link... <span id="time">10</span>s</div>
 <div class="spinner"></div>
 
 <br>
 
-<button id="watchBtn" class="watch" onclick="watch()" disabled>
-▶ Watch Now
-</button>
-
+<button id="watchBtn" class="watch" disabled>▶ Watch Now</button>
 <br>
-
-<button id="downloadBtn" class="download" onclick="download()" disabled>
-⬇ Download
-</button>
-
-<div class="ads"><script>
-  atOptions = {
-    'key' : '507ed3b13a9f8ba9baf28ea95923ebae',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/507ed3b13a9f8ba9baf28ea95923ebae/invoke.js"></script></div>
-
-</div>
-
+<button id="downloadBtn" class="download" disabled>⬇ Download</button>
 
 <footer>
-
 © 2026 XStream Mini App
-
 <br><br>
-
 <a href="/privacy.html">Privacy Policy</a> |
 <a href="/terms.html">Terms</a> |
 <a href="/disclaimer.html">Disclaimer</a> |
 <a href="/contact.html">Contact</a>
-
 </footer>
 
-
 <script>
+/* ================== CONFIG ================== */
+const adsConfig = {
+  rewardedInterstitial: true,  // Rewarded Interstitial on button click
+  rewardedPopup: false,         // Rewarded Popup (pop)
+  inAppInterstitial: false      // In-App Interstitial
+};
 
+/* ================== BASE URL ================== */
 const WATCH_BASE = "https://opposite-juline-movies1234-531abe64.koyeb.app/watch/"
 const DOWNLOAD_BASE = "https://opposite-juline-movies1234-531abe64.koyeb.app/"
-
 const code = window.location.pathname.substring(1)
 
-// URL-safe Base64 decode with padding fix
+/* ================== URL decode ================== */
 function decode(str){
     try{
         let s = str.replace(/-/g,'+').replace(/_/g,'/')
@@ -202,46 +74,73 @@ function decode(str){
     }
 }
 
-function watch(){
-    const decoded = decode(code)
-    if(decoded) window.location.href = WATCH_BASE + decoded
+/* ================== REWARDED ADS ================== */
+async function showRewardedAd(){
+    if(adsConfig.rewardedInterstitial){
+        try{
+            await show_10689414()  // Rewarded Interstitial
+            return true
+        } catch(e){ console.log("Interstitial ad skipped or error", e); return false; }
+    }
+
+    if(adsConfig.rewardedPopup){
+        try{
+            await show_10689414('pop') // Rewarded Popup
+            return true
+        } catch(e){ console.log("Popup ad skipped or error", e); return false; }
+    }
+
+    if(adsConfig.inAppInterstitial){
+        try{
+            await show_10689414({
+                type: 'inApp',
+                inAppSettings: { frequency:2, capping:0.1, interval:30, timeout:5, everyPage:false }
+            })
+            return true
+        } catch(e){ console.log("In-App ad skipped or error", e); return false; }
+    }
+
+    // If no ads enabled, just return true
+    return true
 }
 
-function download(){
-    const decoded = decode(code)
-    if(decoded) window.location.href = DOWNLOAD_BASE + decoded
+/* ================== WATCH / DOWNLOAD ================== */
+async function watch(){
+    const adShown = await showRewardedAd()
+    if(adShown){
+        const decoded = decode(code)
+        if(decoded) window.location.href = WATCH_BASE + decoded
+    }
 }
 
+async function download(){
+    const adShown = await showRewardedAd()
+    if(adShown){
+        const decoded = decode(code)
+        if(decoded) window.location.href = DOWNLOAD_BASE + decoded
+    }
+}
 
-/* TIMER SYSTEM */
-
+/* ================== TIMER ================== */
 let seconds = 10
-
 const time = document.getElementById("time")
 const watchBtn = document.getElementById("watchBtn")
 const downloadBtn = document.getElementById("downloadBtn")
 
 const timer = setInterval(()=>{
-
-seconds--
-
-time.innerText = seconds
-
-if(seconds <= 0){
-
-clearInterval(timer)
-
-document.querySelector(".spinner").style.display="none"
-
-time.innerText="Ready"
-
-watchBtn.disabled=false
-downloadBtn.disabled=false
-
-}
-
+    seconds--
+    time.innerText = seconds
+    if(seconds <= 0){
+        clearInterval(timer)
+        document.querySelector(".spinner").style.display="none"
+        time.innerText="Ready"
+        watchBtn.disabled=false
+        downloadBtn.disabled=false
+    }
 },1000)
 
+watchBtn.addEventListener("click", watch)
+downloadBtn.addEventListener("click", download)
 </script>
 
 </body>
