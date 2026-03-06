@@ -3,51 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <title>XStream Mini App</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
+
 body{
-  background:black;
-  color:white;
-  text-align:center;
-  font-family:sans-serif;
-  margin-top:100px;
+background:#0b0b0b;
+color:white;
+text-align:center;
+font-family:sans-serif;
+margin:0;
+padding:0;
 }
+
+.container{
+margin-top:80px;
+}
+
 button{
-  padding:15px 30px;
-  margin:10px;
-  font-size:18px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
+padding:15px 30px;
+margin:10px;
+font-size:18px;
+border:none;
+border-radius:8px;
+cursor:pointer;
 }
+
+button:disabled{
+opacity:0.4;
+cursor:not-allowed;
+}
+
 .watch{
-  background:#ff0033;
-  color:white;
+background:#ff0033;
+color:white;
 }
+
 .download{
-  background:#0099ff;
-  color:white;
+background:#0099ff;
+color:white;
 }
+
 .ads{
-  margin:20px;
-  padding:10px;
-  border:1px dashed #555;
+margin:20px;
+padding:10px;
+border:1px dashed #555;
 }
+
+/* TIMER */
+
+.timer{
+margin-top:20px;
+font-size:20px;
+color:#00ffc3;
+font-weight:bold;
+}
+
+/* SPINNER */
+
+.spinner{
+margin:15px auto;
+width:40px;
+height:40px;
+border:4px solid #333;
+border-top:4px solid #00ffc3;
+border-radius:50%;
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+
+/* FOOTER */
+
+footer{
+margin-top:80px;
+padding:20px;
+border-top:1px solid #333;
+font-size:14px;
+color:#aaa;
+}
+
+footer a{
+color:#00ffc3;
+text-decoration:none;
+margin:0 8px;
+}
+
+.description{
+max-width:700px;
+margin:auto;
+margin-top:20px;
+font-size:15px;
+color:#ccc;
+line-height:1.6;
+}
+
 </style>
 </head>
 <body>
 
+<div class="container">
+
 <h2>🎬 XStream Mini App</h2>
+
+<div class="description">
+This page redirects you to the secure video streaming player.
+Please wait a few seconds before accessing the watch or download options.
+</div>
 
 <div class="ads">AD SPACE TOP</div>
 
-<button class="watch" onclick="watch()">▶ Watch Now</button>
+<div class="timer">
+⏳ Preparing your link... <span id="time">10</span>s
+</div>
+
+<div class="spinner"></div>
+
 <br>
-<button class="download" onclick="download()">⬇ Download</button>
+
+<button id="watchBtn" class="watch" onclick="watch()" disabled>
+▶ Watch Now
+</button>
+
+<br>
+
+<button id="downloadBtn" class="download" onclick="download()" disabled>
+⬇ Download
+</button>
 
 <div class="ads">AD SPACE BOTTOM</div>
 
+</div>
+
+
+<footer>
+
+© 2026 XStream Mini App
+
+<br><br>
+
+<a href="/privacy.html">Privacy Policy</a> |
+<a href="/terms.html">Terms</a> |
+<a href="/disclaimer.html">Disclaimer</a> |
+<a href="/contact.html">Contact</a>
+
+</footer>
+
+
 <script>
+
 const WATCH_BASE = "https://opposite-juline-movies1234-531abe64.koyeb.app/watch/"
 const DOWNLOAD_BASE = "https://opposite-juline-movies1234-531abe64.koyeb.app/"
 
@@ -57,7 +165,7 @@ const code = window.location.pathname.substring(1)
 function decode(str){
     try{
         let s = str.replace(/-/g,'+').replace(/_/g,'/')
-        while(s.length % 4) s += '=' // add padding if missing
+        while(s.length % 4) s += '='
         return atob(s)
     } catch(e){
         alert("Invalid link")
@@ -74,6 +182,37 @@ function download(){
     const decoded = decode(code)
     if(decoded) window.location.href = DOWNLOAD_BASE + decoded
 }
+
+
+/* TIMER SYSTEM */
+
+let seconds = 10
+
+const time = document.getElementById("time")
+const watchBtn = document.getElementById("watchBtn")
+const downloadBtn = document.getElementById("downloadBtn")
+
+const timer = setInterval(()=>{
+
+seconds--
+
+time.innerText = seconds
+
+if(seconds <= 0){
+
+clearInterval(timer)
+
+document.querySelector(".spinner").style.display="none"
+
+time.innerText="Ready"
+
+watchBtn.disabled=false
+downloadBtn.disabled=false
+
+}
+
+},1000)
+
 </script>
 
 </body>
