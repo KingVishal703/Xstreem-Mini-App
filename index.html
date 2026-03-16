@@ -20,48 +20,56 @@ s.src='https://gizokraijaw.net/vignette.min.js'
 <!-- Rewarded -->
 <script src='//libtl.com/sdk.js' data-zone='10689414' data-sdk='show_10689414'></script>
 
-<!-- EZmob -->
+<!-- EZmob Video -->
 <script src="https://docdn.ezmob.com/prebid.js"></script>
 
 <style>
 
 body{
-background:linear-gradient(180deg,#0b0b0b,#121212);
-color:white;
-text-align:center;
+background:#0f0f0f;
+color:#fff;
 font-family:system-ui;
 margin:0;
-padding:0;
+display:flex;
+justify-content:center;
 }
 
 .container{
-max-width:700px;
-margin:auto;
+width:100%;
+max-width:420px;
 padding:20px;
+text-align:center;
 }
 
 h2{
-font-size:28px;
-margin-top:20px;
+font-size:26px;
+margin-bottom:8px;
 }
 
 .description{
+font-size:14px;
 color:#bbb;
-font-size:15px;
-margin-top:10px;
+margin-bottom:15px;
+}
+
+#ad-video{
+width:100%;
+margin:15px auto;
+border-radius:10px;
+overflow:hidden;
 }
 
 .timer{
-margin-top:20px;
-font-size:20px;
+font-size:18px;
+margin-top:10px;
 color:#00ffc3;
 font-weight:bold;
 }
 
 .spinner{
-margin:20px auto;
-width:40px;
-height:40px;
+margin:15px auto;
+width:35px;
+height:35px;
 border:4px solid #333;
 border-top:4px solid #00ffc3;
 border-radius:50%;
@@ -69,64 +77,67 @@ animation:spin 1s linear infinite;
 }
 
 @keyframes spin{
-0%{transform:rotate(0deg);}
-100%{transform:rotate(360deg);}
+0%{transform:rotate(0deg)}
+100%{transform:rotate(360deg)}
+}
+
+.buttons{
+margin-top:20px;
 }
 
 button{
-padding:16px 30px;
-margin:10px;
-font-size:18px;
+width:100%;
+padding:16px;
+margin-top:10px;
+font-size:17px;
 border:none;
 border-radius:10px;
 cursor:pointer;
-width:220px;
 }
 
 button:disabled{
-opacity:0.5;
+opacity:.5;
 cursor:not-allowed;
 }
 
 .watch{
-background:#ff2b4c;
-color:white;
+background:#ff0044;
+color:#fff;
 }
 
 .download{
-background:#008cff;
-color:white;
+background:#007bff;
+color:#fff;
 }
 
 .banner{
 width:100%;
-max-width:728px;
 height:90px;
-margin:20px auto;
-background:#151515;
+margin-top:25px;
+background:#1a1a1a;
 border:1px solid #333;
 display:flex;
 align-items:center;
 justify-content:center;
-color:#777;
+color:#888;
 font-size:14px;
+border-radius:8px;
 }
 
 footer{
-margin-top:70px;
-padding:20px;
-border-top:1px solid #333;
-font-size:14px;
-color:#aaa;
+margin-top:50px;
+font-size:13px;
+color:#888;
 }
 
 footer a{
 color:#00ffc3;
 text-decoration:none;
-margin:0 8px;
+margin:0 6px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -211,32 +222,26 @@ vpaidMode:2
 
 <div class="spinner"></div>
 
-<!-- Banner Top -->
+<div class="buttons">
+
+<button id="watchBtn" class="watch" disabled>
+▶ Watch Now
+</button>
+
+<button id="downloadBtn" class="download" disabled>
+⬇ Download
+</button>
+
+</div>
+
 <div class="banner">
+Banner Ad Slot
   <!-- BEGIN EZMOB TAG -->
 <SCRIPT TYPE="text/javascript">
 var __jscp=function(){for(var b=0,a=window;a!=a.parent;)++b,a=a.parent;if(a=window.parent==window?document.URL:document.referrer){var c=a.indexOf("://");0<=c&&(a=a.substring(c+3));c=a.indexOf("/");0<=c&&(a=a.substring(0,c))}var b={pu:a,"if":b,rn:new Number(Math.floor(99999999*Math.random())+1)},a=[],d;for(d in b)a.push(d+"="+encodeURIComponent(b[d]));return encodeURIComponent(a.join("&"))};
 document.write('<S' + 'CRIPT TYPE="text/javascript" SRC="//cpm.ezmob.com/tag?zone_id=342973&size=300x250&subid=&j=' + __jscp() + '"></S' + 'CRIPT>');
 </SCRIPT>
 <!-- END EZMOB TAG -->
-Banner Ad Slot
-</div>
-
-<button id="watchBtn" class="watch" disabled>
-▶ Watch Now
-</button>
-
-<br>
-
-<button id="downloadBtn" class="download" disabled>
-⬇ Download
-</button>
-
-<!-- Banner Bottom -->
-<div class="banner">
-Banner Ad Slot
-</div>
-
 </div>
 
 <footer>
@@ -248,17 +253,15 @@ Banner Ad Slot
 <a href="/contact.html">Contact</a>
 </footer>
 
-<script>
+</div>
 
-/* CONFIG */
-const adsConfig={
-rewardedInterstitial:true
-}
+<script>
 
 /* BASE URL */
 
 const WATCH_BASE="https://opposite-juline-movies1234-531abe64.koyeb.app/watch/"
 const DOWNLOAD_BASE="https://opposite-juline-movies1234-531abe64.koyeb.app/"
+
 const code=window.location.pathname.substring(1)
 
 /* DECODE */
