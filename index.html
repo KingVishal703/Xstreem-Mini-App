@@ -20,7 +20,7 @@ s.src='https://gizokraijaw.net/vignette.min.js'
 <!-- Rewarded Ads -->
 <script src='//libtl.com/sdk.js' data-zone='10689414' data-sdk='show_10689414'></script>
 
-<!-- EZmob -->
+<!-- EZmob Video -->
 <script src="https://docdn.ezmob.com/prebid.js"></script>
 
 <style>
@@ -34,34 +34,14 @@ margin:0;
 padding:0;
 }
 
-.banner{
-width:100%;
-max-width:728px;
-margin:20px auto;
-min-height:90px;
-background:#111;
-display:flex;
-align-items:center;
-justify-content:center;
-border:1px solid #333;
+.description{
+max-width:700px;
+margin:auto;
+margin-top:20px;
+font-size:15px;
+color:#ccc;
+line-height:1.6;
 }
-
-button{
-padding:15px 30px;
-margin:10px;
-font-size:18px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-button:disabled{
-opacity:0.4;
-cursor:not-allowed;
-}
-
-.watch{background:#ff0033;color:white;}
-.download{background:#0099ff;color:white;}
 
 .timer{
 margin-top:20px;
@@ -85,12 +65,34 @@ animation:spin 1s linear infinite;
 100%{transform:rotate(360deg);}
 }
 
-.description{
-max-width:700px;
-margin:auto;
-margin-top:20px;
-font-size:15px;
-color:#ccc;
+button{
+padding:15px 30px;
+margin:10px;
+font-size:18px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+button:disabled{
+opacity:0.4;
+cursor:not-allowed;
+}
+
+.watch{background:#ff0033;color:white;}
+.download{background:#0099ff;color:white;}
+
+.banner{
+width:100%;
+max-width:728px;
+min-height:90px;
+margin:20px auto;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#111;
+border:1px solid #333;
+color:#888;
 }
 
 footer{
@@ -101,6 +103,12 @@ font-size:14px;
 color:#aaa;
 }
 
+footer a{
+color:#00ffc3;
+text-decoration:none;
+margin:0 8px;
+}
+
 </style>
 </head>
 
@@ -109,22 +117,21 @@ color:#aaa;
 <h2>🎬 XStream Mini App</h2>
 
 <div class="description">
+This page redirects you to the secure video streaming player.<br>
 Please wait a few seconds before accessing the watch or download options.
 </div>
 
 <!-- EZmob Video Ad -->
-<div id="video-ad"></div>
+<div id="container-1"></div>
 
 <script>
-
 var pbjs = pbjs || {};
 pbjs.que = pbjs.que || [];
 
-pbjs.que.push(function(){
+pbjs.que.push(function() {
 
-var adUnits=[{
-
-code:'video-ad',
+var adUnits = [{
+code:'container-1',
 
 mediaTypes:{
 video:{
@@ -150,10 +157,9 @@ host:'cpm.ezmob.com'
 pbjs.addAdUnits(adUnits);
 
 pbjs.requestBids({
-
 bidsBackHandler:function(){
 
-var bids=pbjs.getHighestCpmBids('video-ad');
+var bids=pbjs.getHighestCpmBids('container-1');
 
 if(bids.length){
 pbjs.renderAd(document,bids[0].adId);
@@ -169,11 +175,11 @@ function renderOutstream(bid){
 
 OutstreamPlayerPB(bid,{
 displayMode:'floating',
-transitions:true
+transitions:true,
+vpaidMode:2
 });
 
 }
-
 </script>
 
 <div class="timer">
@@ -182,72 +188,122 @@ transitions:true
 
 <div class="spinner"></div>
 
-<!-- Banner Slot Top -->
+<!-- Banner Top -->
 <div class="banner">
-Banner Ad Slot (728x90)
+Banner Ad Slot
 </div>
-
-<button id="watchBtn" class="watch" disabled>
-▶ Watch Now
-</button>
 
 <br>
 
-<button id="downloadBtn" class="download" disabled>
-⬇ Download
-</button>
+<button id="watchBtn" class="watch" disabled>▶ Watch Now</button>
+<br>
+<button id="downloadBtn" class="download" disabled>⬇ Download</button>
 
-<!-- Banner Slot Bottom -->
+<!-- Banner Bottom -->
 <div class="banner">
-Banner Ad Slot (728x90)
+Banner Ad Slot
 </div>
 
 <footer>
 © 2026 XStream Mini App
+<br><br>
+<a href="/privacy.html">Privacy Policy</a> |
+<a href="/terms.html">Terms</a> |
+<a href="/disclaimer.html">Disclaimer</a> |
+<a href="/contact.html">Contact</a>
 </footer>
 
 <script>
+
+/* CONFIG */
+const adsConfig = {
+rewardedInterstitial:true,
+rewardedPopup:false,
+inAppInterstitial:false
+}
+
+/* BASE URL */
 
 const WATCH_BASE="https://opposite-juline-movies1234-531abe64.koyeb.app/watch/"
 const DOWNLOAD_BASE="https://opposite-juline-movies1234-531abe64.koyeb.app/"
 const code=window.location.pathname.substring(1)
 
+/* DECODE */
+
 function decode(str){
+
 try{
+
 let s=str.replace(/-/g,'+').replace(/_/g,'/')
-while(s.length%4) s+='='
+while(s.length%4)s+='='
 return atob(s)
+
 }catch{
+
+alert("Invalid link")
 return ""
-}
+
 }
 
-async function showAd(){
+}
+
+/* REWARDED ADS */
+
+async function showRewardedAd(){
+
+if(adsConfig.rewardedInterstitial){
+
 try{
 await show_10689414()
 return true
 }catch{
 return false
 }
+
 }
+
+return true
+
+}
+
+/* WATCH */
 
 async function watch(){
-const ad=await showAd()
-if(ad){
+
+const adShown=await showRewardedAd()
+
+if(adShown){
+
 const decoded=decode(code)
-if(decoded) window.location.href=WATCH_BASE+decoded
+
+if(decoded)
+window.location.href=WATCH_BASE+decoded
+
 }
+
 }
+
+/* DOWNLOAD */
 
 async function download(){
-const ad=await showAd()
-if(ad){
+
+const adShown=await showRewardedAd()
+
+if(adShown){
+
 const decoded=decode(code)
-if(decoded) window.location.href=DOWNLOAD_BASE+decoded
-}
+
+if(decoded)
+window.location.href=DOWNLOAD_BASE+decoded
+
 }
 
+}
+
+/* TIMER */
+
 let seconds=10
+
 const time=document.getElementById("time")
 const watchBtn=document.getElementById("watchBtn")
 const downloadBtn=document.getElementById("downloadBtn")
