@@ -166,9 +166,9 @@ Please wait a few seconds before accessing the watch or download options.
 <script>
 /* ================== CONFIG ================== */
 const adsConfig = {
-  rewardedInterstitial: true,  // Rewarded Interstitial on button click
-  rewardedPopup: false,         // Rewarded Popup (pop)
-  inAppInterstitial: false      // In-App Interstitial
+  rewardedInterstitial: true,
+  rewardedPopup: false,
+  inAppInterstitial: false
 };
 
 /* ================== BASE URL ================== */
@@ -192,30 +192,25 @@ function decode(str){
 async function showRewardedAd(){
     if(adsConfig.rewardedInterstitial){
         try{
-            await show_10689414()  // Rewarded Interstitial
+            await show_10689414()
             return true
-        } catch(e){ console.log("Interstitial ad skipped or error", e); return false; }
+        } catch(e){ return false; }
     }
-
-    if(adsConfig.rewardedPopup){
-        try{
-            await show_10689414('pop') // Rewarded Popup
-            return true
-        } catch(e){ console.log("Popup ad skipped or error", e); return false; }
-    }
-
-    if(adsConfig.inAppInterstitial){
-        try{
-            await show_10689414({
-                type: 'inApp',
-                inAppSettings: { frequency:2, capping:0.1, interval:30, timeout:5, everyPage:false }
-            })
-            return true
-        } catch(e){ console.log("In-App ad skipped or error", e); return false; }
-    }
-
-    // If no ads enabled, just return true
     return true
+}
+
+/* ================== CHROME FORCE OPEN FUNCTION ================== */
+function openInChrome(url){
+    // Android Chrome intent
+    const intentUrl = "intent://" + url.replace("https://", "") + "#Intent;scheme=https;package=com.android.chrome;end";
+
+    // Try Chrome
+    window.location.href = intentUrl;
+
+    // Fallback (agar Chrome nahi ho)
+    setTimeout(()=>{
+        window.location.href = url;
+    }, 1500);
 }
 
 /* ================== WATCH / DOWNLOAD ================== */
@@ -223,7 +218,10 @@ async function watch(){
     const adShown = await showRewardedAd()
     if(adShown){
         const decoded = decode(code)
-        if(decoded) window.location.href = WATCH_BASE + decoded
+        if(decoded){
+            let url = WATCH_BASE + decoded
+            openInChrome(url)
+        }
     }
 }
 
@@ -231,7 +229,10 @@ async function download(){
     const adShown = await showRewardedAd()
     if(adShown){
         const decoded = decode(code)
-        if(decoded) window.location.href = DOWNLOAD_BASE + decoded
+        if(decoded){
+            let url = DOWNLOAD_BASE + decoded
+            openInChrome(url)
+        }
     }
 }
 
@@ -256,6 +257,3 @@ const timer = setInterval(()=>{
 watchBtn.addEventListener("click", watch)
 downloadBtn.addEventListener("click", download)
 </script>
-
-</body>
-</html>
