@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+
+	<link href="https://vjs.zencdn.net/8.5.2/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-ads@6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs-vast-vpaid@2"></script>
+	
 	<script async src="https://js.mbidadm.com/static/scripts.js" data-admpid="432679"></script>
 	<script async src="https://js.mbidadm.com/static/scripts.js" data-admpid="432674"></script>
 	
@@ -45,6 +53,40 @@ Please wait a few seconds before accessing the watch or download options.
 <div class="spinner"></div>
 
 <br>
+
+	<video
+  id="myPlayer"
+  class="video-js vjs-default-skin"
+  controls
+  autoplay
+  muted
+  playsinline
+  width="300"
+  height="200"
+></video>
+
+	<script>
+var player = videojs('myPlayer');
+
+player.ready(function () {
+
+    // 🎬 Main video
+    player.src({
+        src: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        type: "application/x-mpegURL"
+    });
+
+    // 💰 Ad (VAST)
+    player.vastClient({
+        adTagUrl: "https://js.mbidadm.com/vast?zoneid=432677", // 👈 apna ad id
+        playAdAlways: true,
+        adCancelTimeout: 5000
+    });
+
+});
+	</script>
+
+	
   
 <div id="container-1"></div>
 
