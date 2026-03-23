@@ -52,19 +52,33 @@ Please wait a few seconds before accessing the watch or download options.
 <br>
 <button id="downloadBtn" class="download" disabled>⬇ Download</button>
 
-<video id="adPlayer" width="300" height="200" controls>
+
+	<video id="adPlayer" width="300" height="200" autoplay muted playsinline controls>
   <source src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" type="application/x-mpegURL">
 </video>
 
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-	<script>
+<script>
 window.addEventListener("load", () => {
-    const v = document.getElementById("myVideo");
-    if(v){
-        v.play().catch(()=>{});
+    const video = document.getElementById("adPlayer");
+
+    if(video){
+        // HLS fix for mobile/Chrome
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(video.querySelector("source").src);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                video.play().catch(()=>{});
+            });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.play().catch(()=>{});
+        }
     }
 });
-	</script>
+</script>
+	
 	
 <div id="container-1"></div>
   <div data-banner-id="2018312"></div>
