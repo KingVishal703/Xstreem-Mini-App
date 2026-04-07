@@ -2,20 +2,10 @@
 <html lang="en">
 <head>
 
-    <script>(function(s){s.dataset.zone='10704884',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-	<script>(function(s){s.dataset.zone='10736157',s.src='https://izcle.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-	<script>(function(s){s.dataset.zone='10785762',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-	
-	<meta name="clckd" content="62279c66ce853e8b18681d2a42c21e85" />
-	<meta name="665b234fad186ec6d15c20919b6fde369e2438c0" content="665b234fad186ec6d15c20919b6fde369e2438c0" />
-  <script>(function(s){s.dataset.zone='10736157',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 <meta charset="UTF-8">
 <title>XStream Mini App</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- LibTL SDK for Rewarded Interstitial / Popup / In-App -->
-<script src='//libtl.com/sdk.js' data-zone='10689414' data-sdk='show_10689414'></script>
-  <meta name="monetag" content="6220832da301feb0d583ade1718f97ff">
 <style>
 body{background:#0b0b0b;color:white;text-align:center;font-family:sans-serif;margin:0;padding:0;}
 button{padding:15px 30px;margin:10px;font-size:18px;border:none;border-radius:8px;cursor:pointer;}
@@ -32,14 +22,9 @@ footer a{color:#00ffc3;text-decoration:none;margin:0 8px;}
 </head>
 <body>
 
-  <script src="https://5gvci.com/act/files/tag.min.js?z=10704858" data-cfasync="false" async></script>
-  
-  <script>(function(s){s.dataset.zone='10704874',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-  
 <h2>🎬 XStream Mini App</h2>
 
 <div class="description">
-This page redirects you to the secure video streaming player.<br>
 Please wait a few seconds before accessing the watch or download options.
 </div>
 
@@ -47,99 +32,68 @@ Please wait a few seconds before accessing the watch or download options.
 <div class="spinner"></div>
 
 <br>
-  
-<div id="container-1"></div>
 
 <button id="watchBtn" class="watch" disabled>▶ Watch Now</button>
 <br>
 <button id="downloadBtn" class="download" disabled>⬇ Download</button>
 
-
-<div id="container-1"></div>
 <footer>
 © 2026 XStream Mini App
-<br><br>
-<a href="/privacy.html">Privacy Policy</a> |
-<a href="/terms.html">Terms</a> |
-<a href="/disclaimer.html">Disclaimer</a> |
-<a href="/contact.html">Contact</a>
 </footer>
 
 <script>
-/* ================== CONFIG ================== */
-const adsConfig = {
-  rewardedInterstitial: true,
-  rewardedPopup: false,
-  inAppInterstitial: false
-};
 
 /* ================== BASE URL ================== */
 const WATCH_BASE = "https://opposite-juline-movies1234-531abe64.koyeb.app/watch/"
 const DOWNLOAD_BASE = "https://opposite-juline-movies1234-531abe64.koyeb.app/"
+const AD_LINK = "https://www.profitablecpmratenetwork.com/z8u7nf4tu?key=ce8abdc1b9d816d508004b6f3a5ca0a0"
+
 const code = window.location.pathname.substring(1)
 
-/* ================== URL decode ================== */
+/* ================== DECODE ================== */
 function decode(str){
     try{
         let s = str.replace(/-/g,'+').replace(/_/g,'/')
         while(s.length % 4) s += '='
         return atob(s)
     } catch(e){
-        alert("Invalid link")
         return ""
     }
 }
 
-/* ================== REWARDED ADS ================== */
-async function showRewardedAd(){
-    if(adsConfig.rewardedInterstitial){
-        try{
-            await show_10689414()
-            return true
-        } catch(e){ return false; }
-    }
-    return true
+/* ================== OPEN FUNCTION ================== */
+function openInChrome(url){
+    window.location.href = url;
 }
 
-/* ================== CHROME FORCE OPEN FUNCTION ================== */
-function openInChrome(url){
-    // Android Chrome intent
-    const intentUrl = "intent://" + url.replace("https://", "") + "#Intent;scheme=https;package=com.android.chrome;end";
+/* ================== WATCH ================== */
+function watch(){
+    const decoded = decode(code);
+    if(!decoded) return;
 
-    // Try Chrome
-    window.location.href = intentUrl;
+    // Step 1: Ad link open
+    window.location.href = AD_LINK;
 
-    // Fallback (agar Chrome nahi ho)
+    // Step 2: Jab user back kare, tab ye chalega
     setTimeout(()=>{
-        window.location.href = url;
+        openInChrome(WATCH_BASE + decoded);
     }, 1500);
 }
 
-/* ================== WATCH / DOWNLOAD ================== */
-async function watch(){
-    const adShown = await showRewardedAd()
-    if(adShown){
-        const decoded = decode(code)
-        if(decoded){
-            let url = WATCH_BASE + decoded
-            openInChrome(url)
-        }
-    }
-}
+/* ================== DOWNLOAD ================== */
+function download(){
+    const decoded = decode(code);
+    if(!decoded) return;
 
-async function download(){
-    const adShown = await showRewardedAd()
-    if(adShown){
-        const decoded = decode(code)
-        if(decoded){
-            let url = DOWNLOAD_BASE + decoded
-            openInChrome(url)
-        }
-    }
+    window.location.href = AD_LINK;
+
+    setTimeout(()=>{
+        openInChrome(DOWNLOAD_BASE + decoded);
+    }, 1500);
 }
 
 /* ================== TIMER ================== */
-let seconds = 10
+let seconds = 10;
 const time = document.getElementById("time")
 const watchBtn = document.getElementById("watchBtn")
 const downloadBtn = document.getElementById("downloadBtn")
@@ -158,4 +112,7 @@ const timer = setInterval(()=>{
 
 watchBtn.addEventListener("click", watch)
 downloadBtn.addEventListener("click", download)
+
 </script>
+</body>
+</html>
