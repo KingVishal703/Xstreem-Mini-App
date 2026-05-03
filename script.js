@@ -1,33 +1,62 @@
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+const container = document.getElementById("reels-container");
 
-const streamBase = "https://abc.koyeb.app/watch/";
+let videos = [];
+let current = 0;
 
-const streamLink = streamBase + id;
+async function loadVideos() {
+    const res = await fetch("https://YOUR-BACKEND-URL/videos");
+    const data = await res.json();
+    videos = data.videos;
 
-let time = 5;
-
-const timer = document.getElementById("timer");
-const btn = document.getElementById("watchBtn");
-
-const countdown = setInterval(() => {
-
-time--;
-timer.innerText = time;
-
-if(time <= 0){
-clearInterval(countdown);
-btn.disabled = false;
+    renderVideos();
 }
 
-},1000);
+function renderVideos() {
+    videos.forEach((vid, index) => {
+        const div = document.createElement("div");
+        div.className = "reel";
 
-btn.onclick = () => {
+        const video = document.createElement("video");
+        video.src = "https://YOUR-BACKEND-URL" + vid.url;
+        video.controls = false;
+        video.autoplay = index === 0;
+        video.loop = true;
 
-if(window.Telegram && Telegram.WebApp){
-Telegram.WebApp.openLink(streamLink);
-}else{
-window.open(streamLink,"_blank");
+        div.appendChild(video);
+        container.appendChild(div);
+    });
 }
 
-};
+// scroll logic
+window.addEventListener("wheel", (e) => {
+    if (e.deltaY > 0) {
+        nextVideo();
+    } else {
+        prevVideo();
+    }
+});
+
+function nextVideo() {
+    if (current < videos.length - 1) {
+        current++;
+        scrollToVideo();
+    }
+}
+
+function prevVideo() {
+    if (current > 0) {
+        current--;
+        scrollToVideo();
+    }
+}
+
+function scrollToVideo() {
+    container.children[current].scrollIntoView({ behavior: "smooth" });
+
+    document.querySelectorAll("video").forEach((v, i) => {
+        v.pause();
+        if (i === current) v.play();
+    });
+}
+
+loadVideos();
