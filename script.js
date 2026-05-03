@@ -4,7 +4,7 @@ let videos = [];
 let current = 0;
 
 async function loadVideos() {
-    const res = await fetch("https://YOUR-BACKEND-URL/videos");
+    const res = await fetch("https://peaceful-temple-72354-f29bf1f48951.herokuapp.com/");
     const data = await res.json();
     videos = data.videos;
 
@@ -17,7 +17,7 @@ function renderVideos() {
         div.className = "reel";
 
         const video = document.createElement("video");
-        video.src = "https://YOUR-BACKEND-URL" + vid.url;
+        video.src = "https://peaceful-temple-72354-f29bf1f48951.herokuapp.com/" + vid.url;
         video.controls = false;
         video.autoplay = index === 0;
         video.loop = true;
