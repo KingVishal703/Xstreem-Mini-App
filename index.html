@@ -23,16 +23,18 @@ video {
   height: 100%;
   width: 100%;
   object-fit: cover;
+  background: black;
 }
 
 .profile-bar {
   position: absolute;
-  bottom: 100px;
+  bottom: 90px;
   left: 15px;
   display: flex;
   align-items: center;
   color: white;
   gap: 10px;
+  z-index: 2;
 }
 
 .dp {
@@ -68,63 +70,97 @@ video {
 <script>
 
 const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app";
-const USER_ID = 123;
 
 let videos = [];
 let index = 0;
+let currentVideo = null;
 
-// LOAD
+// ================= LOAD REELS =================
 async function loadReels() {
   document.getElementById("app").innerHTML =
     `<div class="loader">Loading...</div>`;
 
-  let res = await fetch(`${API}/api/reels`);
-  let data = await res.json();
+  try {
+    let res = await fetch(`${API}/api/reels`);
+    let data = await res.json();
 
-  videos = data.videos || [];
+    videos = data.videos || [];
 
-  if (!videos.length) {
+    if (!videos.length) {
+      document.getElementById("app").innerHTML =
+        `<div class="loader">No Videos Found</div>`;
+      return;
+    }
+
+    index = 0;
+    loadVideo();
+
+  } catch (e) {
     document.getElementById("app").innerHTML =
-      `<div class="loader">No Videos Found</div>`;
-    return;
+      `<div class="loader">API Error</div>`;
   }
-
-  index = 0;
-  loadVideo();
 }
 
-// LOAD SINGLE VIDEO WITH URL FETCH
-async function loadVideo() {
+// ================= LOAD VIDEO =================
+async function loadVideo(retry = 0) {
 
   if (index >= videos.length) index = 0;
 
   let v = videos[index];
 
-  // GET REAL URL
-  let res = await fetch(`${API}/api/file?file_id=${v.file_id}`);
-  let data = await res.json();
+  try {
+    let res = await fetch(`${API}/api/file?file_id=${v.file_id}`);
+    let data = await res.json();
 
-  if (!data.url) {
+    if (!data.url) throw new Error("No URL");
+
+    v.url = data.url;
+    render(v);
+
+    // preload next video
+    preloadNext();
+
+  } catch (e) {
+    console.log("Skip video:", v.id);
+
+    if (retry < 2) {
+      return loadVideo(retry + 1);
+    }
+
     index++;
-    return loadVideo();
+    loadVideo(0);
   }
-
-  v.url = data.url;
-
-  render(v);
 }
 
-// RENDER
+// ================= PRELOAD NEXT =================
+function preloadNext() {
+  let nextIndex = index + 1;
+  if (nextIndex >= videos.length) return;
+
+  let v = videos[nextIndex];
+
+  fetch(`${API}/api/file?file_id=${v.file_id}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.url) {
+        v.url = data.url;
+      }
+    });
+}
+
+// ================= RENDER =================
 function render(v) {
 
   document.getElementById("app").innerHTML = `
     <div class="video-container">
 
-      <video autoplay muted playsinline id="video"
-        onended="next()"
-        onerror="next()">
-
-        <source src="${v.url}">
+      <video id="video"
+        autoplay
+        muted
+        playsinline
+        controls
+      >
+        <source src="${v.url}" type="video/mp4">
       </video>
 
       <div class="profile-bar">
@@ -138,34 +174,30 @@ function render(v) {
     </div>
   `;
 
+  currentVideo = document.getElementById("video");
+
+  // FIX autoplay issue
+  currentVideo.play().catch(() => {});
+
+  currentVideo.onended = next;
+  currentVideo.onerror = next;
+
   track(v.id);
 }
 
-// NEXT
+// ================= NEXT VIDEO =================
 function next() {
   index++;
   loadVideo();
 }
 
-// TRACK
+// ================= TRACK =================
 function track(id) {
   fetch(`${API}/api/track`, {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({video_id:id})
   });
-}
-  
-// ================= ERROR HANDLER =================
-function handleError() {
-  index++;
-  showNextValid();
-}
-
-// ================= TRACK =================
-// ================= PROFILE =================
-function openProfile(id) {
-  alert("Profile ID: " + id);
 }
 
 // ================= SWIPE =================
@@ -183,6 +215,7 @@ document.addEventListener("touchend", e => {
   }
 });
 
+// ================= START =================
 loadReels();
 
 </script>
