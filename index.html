@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XSTREEM Reels</title>
+<title>Reels App</title>
 
 <style>
 body {
@@ -13,76 +13,61 @@ body {
   font-family: Arial;
 }
 
-/* CATEGORY BAR */
-.cat-bar {
-  position: absolute;
-  top: 10px;
-  left: 0;
-  right: 0;
+/* MAIN CONTAINER */
+.container {
+  height: 100vh;
+  width: 100vw;
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+}
+
+/* REEL */
+.reel {
+  height: 100vh;
+  width: 100vw;
+  scroll-snap-align: start;
+  position: relative;
   display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 10px;
-  z-index: 10;
-}
-
-.cat {
-  padding: 6px 12px;
-  background: rgba(255,255,255,0.2);
-  color: white;
-  border-radius: 20px;
-  white-space: nowrap;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.cat.active {
-  background: white;
-  color: black;
+  justify-content: center;
+  align-items: center;
 }
 
 /* VIDEO */
-.video-container {
-  height: 100vh;
-  width: 100vw;
-  position: relative;
-}
-
 video {
   height: 100%;
   width: 100%;
   object-fit: cover;
-  background: black;
 }
 
-/* PROFILE */
-.profile-bar {
+/* RIGHT ACTIONS */
+.actions {
   position: absolute;
-  bottom: 90px;
-  left: 15px;
+  right: 15px;
+  bottom: 120px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 20px;
   color: white;
-  gap: 10px;
-  z-index: 2;
+  z-index: 10;
+  text-align: center;
 }
 
-.dp {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  border: 2px solid white;
+.btn {
+  font-size: 24px;
+  cursor: pointer;
 }
 
-.username {
-  font-weight: bold;
-}
-
+/* CAPTION */
 .caption {
-  font-size: 13px;
-  opacity: 0.8;
+  position: absolute;
+  bottom: 60px;
+  left: 15px;
+  color: white;
+  font-size: 14px;
+  max-width: 70%;
 }
 
+/* LOADER */
 .loader {
   color: white;
   position: absolute;
@@ -95,22 +80,17 @@ video {
 
 <body>
 
-<div id="app"></div>
+<div id="app" class="container"></div>
 
 <script>
 
-const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app";
-
+const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app/"; 
 let videos = [];
-let filteredVideos = [];
-let index = 0;
-let selectedCategory = "all";
-let currentVideo = null;
 
-// ================= LOAD REELS =================
-async function loadReels() {
+// ================= LOAD =================
+async function loadVideos() {
   document.getElementById("app").innerHTML =
-    `<div class="loader">Loading...</div>`;
+    `<div class="loader">Loading Reels...</div>`;
 
   try {
     let res = await fetch(`${API}/api/reels`);
@@ -124,8 +104,7 @@ async function loadReels() {
       return;
     }
 
-    setupCategories();
-    applyFilter();
+    render();
 
   } catch (e) {
     document.getElementById("app").innerHTML =
@@ -133,154 +112,69 @@ async function loadReels() {
   }
 }
 
-// ================= CATEGORY SYSTEM =================
-function setupCategories() {
-  let cats = ["all", ...new Set(videos.map(v => v.category))];
+// ================= RENDER =================
+function render() {
 
-  let html = `<div class="cat-bar">` +
-    cats.map(c => `
-      <div class="cat ${c === selectedCategory ? "active" : ""}"
-        onclick="selectCategory('${c}')">
-        ${c.replace(/_/g, " ")}
+  let html = "";
+
+  videos.forEach((v, i) => {
+    html += `
+      <div class="reel">
+        <video id="video${i}" 
+          src="" 
+          muted 
+          playsinline
+          loop
+        ></video>
+
+        <div class="caption">${v.caption || ""}</div>
+
+        <div class="actions">
+          <div class="btn">❤️</div>
+          <div class="btn">💬</div>
+          <div class="btn">🔗</div>
+        </div>
       </div>
-    `).join("") +
-    `</div>`;
+    `;
+  });
 
-  document.getElementById("app").innerHTML += html;
-}
+  document.getElementById("app").innerHTML = html;
 
-function selectCategory(cat) {
-  selectedCategory = cat;
-  index = 0;
-  setupCategories();
-  applyFilter();
-}
-
-function applyFilter() {
-  filteredVideos = (selectedCategory === "all")
-    ? videos
-    : videos.filter(v => v.category === selectedCategory);
-
-  if (!filteredVideos.length) {
-    document.getElementById("app").innerHTML =
-      `<div class="loader">No Videos Found</div>`;
-    return;
-  }
-
-  index = 0;
-  loadVideo();
-}
-
-// ================= LOAD VIDEO =================
-async function loadVideo(retry = 0) {
-
-  if (index >= filteredVideos.length) index = 0;
-
-  let v = filteredVideos[index];
-
-  try {
+  // load video URLs
+  videos.forEach(async (v, i) => {
     let res = await fetch(`${API}/api/file?file_id=${v.file_id}`);
     let data = await res.json();
 
-    if (!data.url) throw new Error("No URL");
-
-    v.url = data.url;
-    render(v);
-
-    preloadNext();
-
-  } catch (e) {
-    console.log("Skip video:", v.id);
-
-    if (retry < 2) {
-      return loadVideo(retry + 1);
+    if (data.url) {
+      let vid = document.getElementById(`video${i}`);
+      vid.src = data.url;
     }
-
-    index++;
-    loadVideo(0);
-  }
-}
-
-// ================= PRELOAD =================
-function preloadNext() {
-  let nextIndex = index + 1;
-  if (nextIndex >= filteredVideos.length) return;
-
-  let v = filteredVideos[nextIndex];
-
-  fetch(`${API}/api/file?file_id=${v.file_id}`)
-    .then(r => r.json())
-    .then(data => {
-      if (data.url) v.url = data.url;
-    });
-}
-
-// ================= RENDER =================
-function render(v) {
-
-  document.getElementById("app").innerHTML = `
-    <div class="video-container">
-
-      <video id="video"
-        autoplay
-        muted
-        playsinline
-      >
-        <source src="${v.url}" type="video/mp4">
-      </video>
-
-      <div class="profile-bar">
-        <img class="dp" src="https://i.pravatar.cc/100">
-        <div>
-          <div class="username">@user_${v.id}</div>
-          <div class="caption">${v.caption || ""}</div>
-        </div>
-      </div>
-
-    </div>
-  `;
-
-  currentVideo = document.getElementById("video");
-  currentVideo.play().catch(() => {});
-
-  currentVideo.onended = next;
-  currentVideo.onerror = next;
-
-  track(v.id);
-}
-
-// ================= NEXT =================
-function next() {
-  index++;
-  loadVideo();
-}
-
-// ================= TRACK =================
-function track(id) {
-  fetch(`${API}/api/track`, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({video_id:id})
   });
+
+  setupAutoPlay();
 }
 
-// ================= SWIPE =================
-let startY = 0;
+// ================= AUTO PLAY =================
+function setupAutoPlay() {
+  const vids = document.querySelectorAll("video");
 
-document.addEventListener("touchstart", e => {
-  startY = e.touches[0].clientY;
-});
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      let video = entry.target;
 
-document.addEventListener("touchend", e => {
-  let endY = e.changedTouches[0].clientY;
+      if (entry.isIntersecting) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    });
+  }, { threshold: 0.7 });
 
-  if (startY - endY > 50) {
-    next();
-  }
-});
+  vids.forEach(v => observer.observe(v));
+}
 
 // ================= START =================
-loadReels();
+loadVideos();
 
 </script>
 
