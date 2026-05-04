@@ -1,15 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reels</title>
-  <link rel="stylesheet" href="style.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reels</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  overflow: hidden;
+}
+
+.video-container {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+video {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.caption {
+  position: absolute;
+  bottom: 20px;
+  left: 10px;
+  color: white;
+  font-size: 16px;
+}
+</style>
 </head>
+
 <body>
 
 <div id="app"></div>
 
-<script src="script.js"></script>
+<script>
+const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app/";
+let videos = [];
+let current = 0;
+
+// Load videos
+async function loadVideos() {
+  let res = await fetch(`${API}/api/reels?user_id=123`);
+  let data = await res.json();
+  videos = data.videos;
+  render();
+}
+
+// Render video
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+
+  let v = videos[current];
+
+  let div = document.createElement("div");
+  div.className = "video-container";
+
+  div.innerHTML = `
+    <video src="${v.url}" autoplay muted playsinline></video>
+    <div class="caption">${v.caption}</div>
+  `;
+
+  app.appendChild(div);
+
+  track(v.id);
+}
+
+// Swipe handling
+let startY = 0;
+
+document.addEventListener("touchstart", e => {
+  startY = e.touches[0].clientY;
+});
+
+document.addEventListener("touchend", e => {
+  let endY = e.changedTouches[0].clientY;
+
+  if (startY - endY > 50) {
+    nextVideo();
+  }
+  if (endY - startY > 50) {
+    prevVideo();
+  }
+});
+
+function nextVideo() {
+  current++;
+  if (current >= videos.length) current = 0;
+  render();
+}
+
+function prevVideo() {
+  current--;
+  if (current < 0) current = videos.length - 1;
+  render();
+}
+
+// Track views
+function track(id) {
+  fetch(`${API}/api/track`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ video_id: id })
+  });
+}
+
+loadVideos();
+</script>
+
 </body>
 </html>
