@@ -1,111 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xstreem Reels</title>
+<title>Reels</title>
 
 <style>
 body {
   margin: 0;
   background: black;
-  font-family: Arial;
   overflow: hidden;
+  font-family: Arial;
 }
 
-/* ===== VIDEO ===== */
-.video-container {
-  height: 100vh;
+.video {
   width: 100vw;
-  position: relative;
-}
-
-video {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
   object-fit: cover;
 }
 
-/* ===== BOTTOM USER BAR ===== */
-.user-bar {
+.bottom {
   position: absolute;
-  bottom: 80px;
+  bottom: 20px;
+  left: 15px;
+  color: white;
+}
+
+.profile {
+  position: absolute;
+  bottom: 90px;
   left: 15px;
   display: flex;
   align-items: center;
+  gap: 10px;
   color: white;
-  cursor: pointer;
 }
 
-.user-bar img {
-  width: 45px;
-  height: 45px;
+.dp {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  border: 2px solid white;
-  margin-right: 10px;
-  object-fit: cover;
+  background: gray;
 }
 
 .username {
   font-weight: bold;
 }
 
-/* ===== CAPTION ===== */
-.caption {
-  position: absolute;
-  bottom: 40px;
-  left: 15px;
-  color: white;
-  font-size: 14px;
-  max-width: 80%;
-}
-
-/* ===== PROFILE PANEL ===== */
-.profile-panel {
-  position: fixed;
-  bottom: -100%;
-  left: 0;
-  width: 100%;
-  height: 40%;
-  background: #111;
-  color: white;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  transition: 0.3s;
-  padding: 20px;
-}
-
-.profile-panel.active {
-  bottom: 0;
-}
-
-.profile-header {
-  display: flex;
-  align-items: center;
-}
-
-.profile-header img {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  margin-right: 15px;
-  border: 2px solid white;
-}
-
-.close-btn {
+.right {
   position: absolute;
   right: 15px;
-  top: 10px;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-/* ===== TOP BAR ===== */
-.top {
-  position: absolute;
-  top: 15px;
-  left: 15px;
+  bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   color: white;
-  font-weight: bold;
 }
 </style>
 </head>
@@ -114,78 +62,49 @@ video {
 
 <div id="app"></div>
 
-<!-- PROFILE PANEL -->
-<div id="profile" class="profile-panel">
-  <div class="close-btn" onclick="closeProfile()">✖</div>
-
-  <div class="profile-header">
-    <img id="pdp" src="" />
-    <div>
-      <div id="pname" style="font-size:18px;font-weight:bold;"></div>
-      <div style="font-size:12px;opacity:0.7;">Xstreem User</div>
-    </div>
-  </div>
-</div>
-
 <script>
-const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app/";
-const USER_ID = 123;
+const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app/reels";
 
 let videos = [];
-let current = 0;
+let i = 0;
 
-// ===== LOAD VIDEOS =====
-async function loadVideos() {
-  let res = await fetch(`${API}/api/reels?user_id=${USER_ID}`);
+async function load() {
+  let res = await fetch(API);
   let data = await res.json();
 
-  videos = data.videos || [];
+  videos = data.videos;
   render();
 }
 
-// ===== RENDER =====
 function render() {
-  let v = videos[current];
+  let v = videos[i];
 
   document.getElementById("app").innerHTML = `
-    <div class="video-container">
-      <video autoplay muted playsinline src="${v.url}"></video>
+    <video class="video" autoplay muted loop src="${v.url}"></video>
 
-      <div class="top">XSTREEM</div>
+    <div class="profile">
+      <div class="dp"></div>
+      <div class="username">@user_${v.category}</div>
+    </div>
 
-      <div class="user-bar" onclick="openProfile('${v.user_name}','${v.user_dp}')">
-        <img src="${v.user_dp}" />
-        <div class="username">@${v.user_name}</div>
-      </div>
+    <div class="bottom">
+      ${v.caption}
+    </div>
 
-      <div class="caption">${v.caption || ""}</div>
+    <div class="right">
+      ❤️ Like
+      💬 Comment
+      🔗 Share
     </div>
   `;
 }
 
-// ===== NEXT VIDEO =====
-document.addEventListener("touchend", e => {
-  next();
+document.addEventListener("click", () => {
+  i = (i + 1) % videos.length;
+  render();
 });
 
-function next() {
-  current = (current + 1) % videos.length;
-  render();
-}
-
-// ===== PROFILE OPEN =====
-function openProfile(name, dp) {
-  document.getElementById("profile").classList.add("active");
-  document.getElementById("pdp").src = dp;
-  document.getElementById("pname").innerText = name;
-}
-
-// ===== CLOSE PROFILE =====
-function closeProfile() {
-  document.getElementById("profile").classList.remove("active");
-}
-
-loadVideos();
+load();
 </script>
 
 </body>
