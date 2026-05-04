@@ -13,58 +13,18 @@ body {
   font-family: Arial;
 }
 
-/* MAIN CONTAINER */
-.container {
-  height: 100vh;
-  width: 100vw;
-  scroll-snap-type: y mandatory;
-  overflow-y: scroll;
-}
-
-/* REEL */
-.reel {
-  height: 100vh;
-  width: 100vw;
-  scroll-snap-align: start;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 /* VIDEO */
+.video-box {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
 video {
   height: 100%;
   width: 100%;
   object-fit: cover;
-}
-
-/* RIGHT ACTIONS */
-.actions {
-  position: absolute;
-  right: 15px;
-  bottom: 120px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  color: white;
-  z-index: 10;
-  text-align: center;
-}
-
-.btn {
-  font-size: 24px;
-  cursor: pointer;
-}
-
-/* CAPTION */
-.caption {
-  position: absolute;
-  bottom: 60px;
-  left: 15px;
-  color: white;
-  font-size: 14px;
-  max-width: 70%;
+  background: black;
 }
 
 /* LOADER */
@@ -75,22 +35,49 @@ video {
   left: 50%;
   transform: translate(-50%,-50%);
 }
+
+/* INFO */
+.info {
+  position: absolute;
+  bottom: 80px;
+  left: 15px;
+  color: white;
+  z-index: 2;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.cat {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.views {
+  font-size: 12px;
+  opacity: 0.7;
+}
 </style>
 </head>
 
 <body>
 
-<div id="app" class="container"></div>
+<div id="app"></div>
 
 <script>
 
-const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app/"; 
+const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app";
+
 let videos = [];
+let index = 0;
+let currentVideo = null;
 
 // ================= LOAD =================
-async function loadVideos() {
+async function loadReels() {
   document.getElementById("app").innerHTML =
-    `<div class="loader">Loading Reels...</div>`;
+    `<div class="loader">Loading...</div>`;
 
   try {
     let res = await fetch(`${API}/api/reels`);
@@ -104,7 +91,7 @@ async function loadVideos() {
       return;
     }
 
-    render();
+    loadVideo();
 
   } catch (e) {
     document.getElementById("app").innerHTML =
@@ -112,69 +99,112 @@ async function loadVideos() {
   }
 }
 
-// ================= RENDER =================
-function render() {
+// ================= LOAD VIDEO =================
+async function loadVideo(retry = 0) {
 
-  let html = "";
+  if (index >= videos.length) index = 0;
 
-  videos.forEach((v, i) => {
-    html += `
-      <div class="reel">
-        <video id="video${i}" 
-          src="" 
-          muted 
-          playsinline
-          loop
-        ></video>
+  let v = videos[index];
 
-        <div class="caption">${v.caption || ""}</div>
-
-        <div class="actions">
-          <div class="btn">❤️</div>
-          <div class="btn">💬</div>
-          <div class="btn">🔗</div>
-        </div>
-      </div>
-    `;
-  });
-
-  document.getElementById("app").innerHTML = html;
-
-  // load video URLs
-  videos.forEach(async (v, i) => {
+  try {
     let res = await fetch(`${API}/api/file?file_id=${v.file_id}`);
     let data = await res.json();
 
-    if (data.url) {
-      let vid = document.getElementById(`video${i}`);
-      vid.src = data.url;
-    }
-  });
+    if (!data.url) throw new Error("No URL");
 
-  setupAutoPlay();
+    v.url = data.url;
+    render(v);
+    preloadNext();
+
+  } catch (e) {
+    console.log("Skip:", v.id);
+
+    if (retry < 2) return loadVideo(retry + 1);
+
+    index++;
+    loadVideo(0);
+  }
 }
 
-// ================= AUTO PLAY =================
-function setupAutoPlay() {
-  const vids = document.querySelectorAll("video");
+// ================= PRELOAD =================
+function preloadNext() {
+  let next = index + 1;
+  if (next >= videos.length) return;
 
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      let video = entry.target;
+  let v = videos[next];
 
-      if (entry.isIntersecting) {
-        video.play();
-      } else {
-        video.pause();
-      }
+  fetch(`${API}/api/file?file_id=${v.file_id}`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.url) v.url = d.url;
     });
-  }, { threshold: 0.7 });
-
-  vids.forEach(v => observer.observe(v));
 }
+
+// ================= RENDER =================
+function render(v) {
+
+  document.getElementById("app").innerHTML = `
+    <div class="video-box">
+
+      <video id="video"
+        autoplay
+        muted
+        playsinline
+      >
+        <source src="${v.url}" type="video/mp4">
+      </video>
+
+      <div class="info">
+        <div class="title">${v.caption || "No Caption"}</div>
+        <div class="cat">📁 ${v.category}</div>
+        <div class="views">👁️ ${v.views} views</div>
+      </div>
+
+    </div>
+  `;
+
+  currentVideo = document.getElementById("video");
+
+  currentVideo.play().catch(()=>{});
+
+  currentVideo.onended = next;
+  currentVideo.onerror = next;
+
+  track(v.id);
+}
+
+// ================= NEXT =================
+function next() {
+  index++;
+  loadVideo();
+}
+
+// ================= TRACK =================
+function track(id) {
+  fetch(`${API}/api/track`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({video_id:id})
+  });
+}
+
+// ================= SWIPE =================
+let startY = 0;
+
+document.addEventListener("touchstart", e => {
+  startY = e.touches[0].clientY;
+});
+
+document.addEventListener("touchend", e => {
+  let endY = e.changedTouches[0].clientY;
+
+  if (startY - endY > 50) {
+    next();
+  }
+});
 
 // ================= START =================
-loadVideos();
+loadReels();
 
 </script>
 
