@@ -25,7 +25,6 @@ video {
   object-fit: cover;
 }
 
-/* Profile */
 .profile-bar {
   position: absolute;
   bottom: 100px;
@@ -89,32 +88,29 @@ async function loadReels() {
       return;
     }
 
-    await render();
+    render();
 
   } catch(err){
+    console.log(err);
     document.getElementById("app").innerHTML = `<div class="loader">API Error</div>`;
   }
 }
 
-// ================= GET VIDEO URL =================
-async function getVideoUrl(file_id){
-  let res = await fetch(`${API}/api/file?file_id=${file_id}`);
-  let data = await res.json();
-  return data.url;
-}
-
 // ================= RENDER =================
-async function render(){
+function render(){
 
   let v = videos[index];
 
-  let videoUrl = await getVideoUrl(v.file_id);
+  if(!v || !v.url){
+    document.getElementById("app").innerHTML = `<div class="loader">Video Not Available</div>`;
+    return;
+  }
 
   document.getElementById("app").innerHTML = `
     <div class="video-container">
 
       <video autoplay muted playsinline id="video">
-        <source src="${videoUrl}">
+        <source src="${v.url}">
       </video>
 
       <div class="profile-bar" onclick="openProfile('${v.id}')">
@@ -132,10 +128,10 @@ async function render(){
 }
 
 // ================= NEXT =================
-async function next(){
+function next(){
   index++;
   if(index >= videos.length) index = 0;
-  await render();
+  render();
 }
 
 // ================= TRACK =================
