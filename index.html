@@ -2,57 +2,20 @@
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xstreem Mini App</title>
+<title>Xstreem Reels</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
+  margin: 0;
   background: black;
   font-family: Arial;
   overflow: hidden;
-  color: white;
 }
 
-/* ================= LAYOUT ================= */
-.container {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-}
-
-/* ================= PROFILE SIDE ================= */
-.profile {
-  width: 25%;
-  background: #111;
-  padding: 15px;
-  overflow-y: auto;
-}
-
-.profile h2 {
-  margin-bottom: 10px;
-}
-
-.profile-box {
-  background: #222;
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-/* ================= REELS SIDE ================= */
-.reels {
-  width: 75%;
-  position: relative;
-}
-
+/* ===== VIDEO ===== */
 .video-container {
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   position: relative;
 }
 
@@ -62,181 +25,167 @@ video {
   object-fit: cover;
 }
 
-.caption {
+/* ===== BOTTOM USER BAR ===== */
+.user-bar {
   position: absolute;
-  bottom: 70px;
+  bottom: 80px;
   left: 15px;
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  color: white;
+  cursor: pointer;
 }
 
-.top-bar {
-  position: absolute;
-  top: 20px;
-  left: 15px;
+.user-bar img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid white;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.username {
   font-weight: bold;
 }
 
-/* ================= LOADER ================= */
-.loader {
+/* ===== CAPTION ===== */
+.caption {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
+  bottom: 40px;
+  left: 15px;
+  color: white;
+  font-size: 14px;
+  max-width: 80%;
+}
+
+/* ===== PROFILE PANEL ===== */
+.profile-panel {
+  position: fixed;
+  bottom: -100%;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: #111;
+  color: white;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  transition: 0.3s;
+  padding: 20px;
+}
+
+.profile-panel.active {
+  bottom: 0;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+}
+
+.profile-header img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin-right: 15px;
+  border: 2px solid white;
+}
+
+.close-btn {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* ===== TOP BAR ===== */
+.top {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: white;
+  font-weight: bold;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div id="app"></div>
 
-  <!-- ================= PROFILE ================= -->
-  <div class="profile">
-    <h2>👤 Profile</h2>
+<!-- PROFILE PANEL -->
+<div id="profile" class="profile-panel">
+  <div class="close-btn" onclick="closeProfile()">✖</div>
 
-    <div class="profile-box">
-      <div id="userId">User: Loading...</div>
-    </div>
-
-    <div class="profile-box">
-      <div id="premium">Premium: Loading...</div>
-    </div>
-
-    <div class="profile-box">
-      <div id="freeLeft">Free Left: ...</div>
-    </div>
-
-    <div class="profile-box">
-      <button onclick="loadProfile()">🔄 Refresh</button>
+  <div class="profile-header">
+    <img id="pdp" src="" />
+    <div>
+      <div id="pname" style="font-size:18px;font-weight:bold;"></div>
+      <div style="font-size:12px;opacity:0.7;">Xstreem User</div>
     </div>
   </div>
-
-  <!-- ================= REELS ================= -->
-  <div class="reels">
-    <div id="app"></div>
-  </div>
-
 </div>
 
 <script>
-
-const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app/";
+const API = "https://your-backend-url.com";
 const USER_ID = 123;
 
 let videos = [];
 let current = 0;
 
-// ================= LOAD PROFILE =================
-async function loadProfile() {
-  try {
-    let res = await fetch(`${API}/api/profile?user_id=${USER_ID}`);
-    let data = await res.json();
-
-    document.getElementById("userId").innerText = "User: " + data.user_id;
-    document.getElementById("premium").innerText = "Premium: " + data.premium;
-    document.getElementById("freeLeft").innerText = "Free Videos: " + data.free_videos_left;
-
-  } catch (e) {
-    console.log("Profile error", e);
-  }
-}
-
-// ================= LOAD REELS =================
+// ===== LOAD VIDEOS =====
 async function loadVideos() {
-  try {
-    showLoader();
+  let res = await fetch(`${API}/api/reels?user_id=${USER_ID}`);
+  let data = await res.json();
 
-    let res = await fetch(`${API}/api/reels?user_id=${USER_ID}`);
-    let data = await res.json();
-
-    videos = data.videos || [];
-
-    if (videos.length === 0) {
-      showMessage("No videos");
-      return;
-    }
-
-    current = 0;
-    render();
-
-  } catch (err) {
-    showMessage("API Error");
-  }
+  videos = data.videos || [];
+  render();
 }
 
-// ================= RENDER VIDEO =================
+// ===== RENDER =====
 function render() {
-  const app = document.getElementById("app");
-  app.innerHTML = "";
-
   let v = videos[current];
 
-  let div = document.createElement("div");
-  div.className = "video-container";
+  document.getElementById("app").innerHTML = `
+    <div class="video-container">
+      <video autoplay muted playsinline src="${v.url}"></video>
 
-  div.innerHTML = `
-    <video src="${v.url}" autoplay muted playsinline></video>
-    <div class="top-bar">XSTREEM</div>
-    <div class="caption">${v.caption || ""}</div>
+      <div class="top">XSTREEM</div>
+
+      <div class="user-bar" onclick="openProfile('${v.user_name}','${v.user_dp}')">
+        <img src="${v.user_dp}" />
+        <div class="username">@${v.user_name}</div>
+      </div>
+
+      <div class="caption">${v.caption || ""}</div>
+    </div>
   `;
-
-  app.appendChild(div);
-
-  track(v.id);
 }
 
-// ================= NEXT =================
-function nextVideo() {
-  current++;
-  if (current >= videos.length) current = 0;
-  render();
-}
-
-// ================= PREV =================
-function prevVideo() {
-  current--;
-  if (current < 0) current = videos.length - 1;
-  render();
-}
-
-// ================= TRACK =================
-function track(id) {
-  fetch(`${API}/api/track`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ video_id: id })
-  });
-}
-
-// ================= SWIPE =================
-let startY = 0;
-
-document.addEventListener("touchstart", e => {
-  startY = e.touches[0].clientY;
-});
-
+// ===== NEXT VIDEO =====
 document.addEventListener("touchend", e => {
-  let endY = e.changedTouches[0].clientY;
-
-  if (startY - endY > 50) nextVideo();
-  if (endY - startY > 50) prevVideo();
+  next();
 });
 
-// ================= HELPERS =================
-function showLoader() {
-  document.getElementById("app").innerHTML =
-    `<div class="loader">Loading...</div>`;
+function next() {
+  current = (current + 1) % videos.length;
+  render();
 }
 
-function showMessage(msg) {
-  document.getElementById("app").innerHTML =
-    `<div class="loader">${msg}</div>`;
+// ===== PROFILE OPEN =====
+function openProfile(name, dp) {
+  document.getElementById("profile").classList.add("active");
+  document.getElementById("pdp").src = dp;
+  document.getElementById("pname").innerText = name;
 }
 
-// ================= INIT =================
+// ===== CLOSE PROFILE =====
+function closeProfile() {
+  document.getElementById("profile").classList.remove("active");
+}
+
 loadVideos();
-loadProfile();
-
 </script>
 
 </body>
