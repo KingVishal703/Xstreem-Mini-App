@@ -73,62 +73,61 @@ const USER_ID = 123;
 let videos = [];
 let index = 0;
 
-// ================= LOAD =================
+// LOAD
 async function loadReels() {
-  try {
+  document.getElementById("app").innerHTML =
+    `<div class="loader">Loading...</div>`;
+
+  let res = await fetch(`${API}/api/reels`);
+  let data = await res.json();
+
+  videos = data.videos || [];
+
+  if (!videos.length) {
     document.getElementById("app").innerHTML =
-      `<div class="loader">Loading...</div>`;
-
-    let res = await fetch(`${API}/api/reels?user_id=${USER_ID}`);
-    let data = await res.json();
-
-    videos = data.videos || [];
-
-    if (!videos.length) {
-      document.getElementById("app").innerHTML =
-        `<div class="loader">No Videos Found</div>`;
-      return;
-    }
-
-    index = 0;
-    showNextValid();
-
-  } catch (err) {
-    console.log(err);
-    document.getElementById("app").innerHTML =
-      `<div class="loader">API Error</div>`;
+      `<div class="loader">No Videos Found</div>`;
+    return;
   }
+
+  index = 0;
+  loadVideo();
 }
 
-// ================= SAFE NEXT =================
-function showNextValid() {
+// LOAD SINGLE VIDEO WITH URL FETCH
+async function loadVideo() {
+
   if (index >= videos.length) index = 0;
 
   let v = videos[index];
 
-  // skip invalid videos
-  if (!v || !v.url) {
+  // GET REAL URL
+  let res = await fetch(`${API}/api/file?file_id=${v.file_id}`);
+  let data = await res.json();
+
+  if (!data.url) {
     index++;
-    return showNextValid();
+    return loadVideo();
   }
+
+  v.url = data.url;
 
   render(v);
 }
 
-// ================= RENDER =================
+// RENDER
 function render(v) {
 
   document.getElementById("app").innerHTML = `
     <div class="video-container">
 
       <video autoplay muted playsinline id="video"
-        onerror="handleError()"
-        onended="next()">
+        onended="next()"
+        onerror="next()">
 
         <source src="${v.url}">
       </video>
 
-      <div class="profile-bar" onclick="openProfile('${v.id}')">
+      <div class="profile-bar">
         <img class="dp" src="https://i.pravatar.cc/100">
         <div>
           <div class="username">@user_${v.id}</div>
@@ -142,12 +141,21 @@ function render(v) {
   track(v.id);
 }
 
-// ================= NEXT =================
+// NEXT
 function next() {
   index++;
-  showNextValid();
+  loadVideo();
 }
 
+// TRACK
+function track(id) {
+  fetch(`${API}/api/track`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({video_id:id})
+  });
+}
+  
 // ================= ERROR HANDLER =================
 function handleError() {
   index++;
@@ -155,14 +163,6 @@ function handleError() {
 }
 
 // ================= TRACK =================
-function track(id) {
-  fetch(`${API}/api/track`, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({video_id: id})
-  });
-}
-
 // ================= PROFILE =================
 function openProfile(id) {
   alert("Profile ID: " + id);
