@@ -76,40 +76,55 @@ let index = 0;
 // ================= LOAD =================
 async function loadReels() {
   try {
-    document.getElementById("app").innerHTML = `<div class="loader">Loading...</div>`;
+    document.getElementById("app").innerHTML =
+      `<div class="loader">Loading...</div>`;
 
     let res = await fetch(`${API}/api/reels?user_id=${USER_ID}`);
     let data = await res.json();
 
     videos = data.videos || [];
 
-    if(!videos.length){
-      document.getElementById("app").innerHTML = `<div class="loader">No Videos Found</div>`;
+    if (!videos.length) {
+      document.getElementById("app").innerHTML =
+        `<div class="loader">No Videos Found</div>`;
       return;
     }
 
-    render();
+    index = 0;
+    showNextValid();
 
-  } catch(err){
+  } catch (err) {
     console.log(err);
-    document.getElementById("app").innerHTML = `<div class="loader">API Error</div>`;
+    document.getElementById("app").innerHTML =
+      `<div class="loader">API Error</div>`;
   }
 }
 
-// ================= RENDER =================
-function render(){
+// ================= SAFE NEXT =================
+function showNextValid() {
+  if (index >= videos.length) index = 0;
 
   let v = videos[index];
 
-  if(!v || !v.url){
-    document.getElementById("app").innerHTML = `<div class="loader">Video Not Available</div>`;
-    return;
+  // skip invalid videos
+  if (!v || !v.url) {
+    index++;
+    return showNextValid();
   }
+
+  render(v);
+}
+
+// ================= RENDER =================
+function render(v) {
 
   document.getElementById("app").innerHTML = `
     <div class="video-container">
 
-      <video autoplay muted playsinline id="video">
+      <video autoplay muted playsinline id="video"
+        onerror="handleError()"
+        onended="next()">
+
         <source src="${v.url}">
       </video>
 
@@ -128,37 +143,42 @@ function render(){
 }
 
 // ================= NEXT =================
-function next(){
+function next() {
   index++;
-  if(index >= videos.length) index = 0;
-  render();
+  showNextValid();
+}
+
+// ================= ERROR HANDLER =================
+function handleError() {
+  index++;
+  showNextValid();
 }
 
 // ================= TRACK =================
-function track(id){
+function track(id) {
   fetch(`${API}/api/track`, {
     method: "POST",
     headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({video_id:id})
+    body: JSON.stringify({video_id: id})
   });
 }
 
 // ================= PROFILE =================
-function openProfile(id){
+function openProfile(id) {
   alert("Profile ID: " + id);
 }
 
 // ================= SWIPE =================
 let startY = 0;
 
-document.addEventListener("touchstart", e=>{
+document.addEventListener("touchstart", e => {
   startY = e.touches[0].clientY;
 });
 
-document.addEventListener("touchend", e=>{
+document.addEventListener("touchend", e => {
   let endY = e.changedTouches[0].clientY;
 
-  if(startY - endY > 50){
+  if (startY - endY > 50) {
     next();
   }
 });
