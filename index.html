@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reels</title>
+<title>XSTREEM Reels</title>
 
 <style>
 body {
@@ -12,48 +13,52 @@ body {
   font-family: Arial;
 }
 
-.video {
-  width: 100vw;
+.video-container {
   height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+video {
+  height: 100%;
+  width: 100%;
   object-fit: cover;
 }
 
-.bottom {
+/* Profile Bar */
+.profile-bar {
   position: absolute;
-  bottom: 20px;
-  left: 15px;
-  color: white;
-}
-
-.profile {
-  position: absolute;
-  bottom: 90px;
+  bottom: 100px;
   left: 15px;
   display: flex;
   align-items: center;
-  gap: 10px;
   color: white;
+  gap: 10px;
 }
 
 .dp {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  background: gray;
+  border: 2px solid white;
 }
 
 .username {
   font-weight: bold;
 }
 
-.right {
-  position: absolute;
-  right: 15px;
-  bottom: 120px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.caption {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* Loader */
+.loader {
   color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }
 </style>
 </head>
@@ -63,48 +68,98 @@ body {
 <div id="app"></div>
 
 <script>
-const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app/reels";
+
+const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app"; // ✅ your backend
+const USER_ID = 123;
 
 let videos = [];
-let i = 0;
+let index = 0;
 
-async function load() {
-  let res = await fetch(API);
-  let data = await res.json();
+// ================= LOAD =================
+async function loadReels() {
+  try {
+    document.getElementById("app").innerHTML = `<div class="loader">Loading...</div>`;
 
-  videos = data.videos;
-  render();
+    let res = await fetch(`${API}/api/reels?user_id=${USER_ID}`);
+    let data = await res.json();
+
+    videos = data.videos || [];
+
+    if(videos.length === 0){
+      document.getElementById("app").innerHTML = `<div class="loader">No Videos Found</div>`;
+      return;
+    }
+
+    render();
+
+  } catch(err){
+    document.getElementById("app").innerHTML = `<div class="loader">API Error</div>`;
+  }
 }
 
-function render() {
-  let v = videos[i];
+// ================= RENDER =================
+function render(){
+  let v = videos[index];
 
   document.getElementById("app").innerHTML = `
-    <video class="video" autoplay muted loop src="${v.url}"></video>
+    <div class="video-container">
 
-    <div class="profile">
-      <div class="dp"></div>
-      <div class="username">@user_${v.category}</div>
-    </div>
+      <video autoplay muted playsinline id="video">
+        <source src="${v.url}">
+      </video>
 
-    <div class="bottom">
-      ${v.caption}
-    </div>
+      <div class="profile-bar" onclick="openProfile('${v.id}')">
+        <img class="dp" src="https://i.pravatar.cc/100">
+        <div>
+          <div class="username">@user_${v.id}</div>
+          <div class="caption">${v.caption || ""}</div>
+        </div>
+      </div>
 
-    <div class="right">
-      ❤️ Like
-      💬 Comment
-      🔗 Share
     </div>
   `;
+
+  track(v.id);
 }
 
-document.addEventListener("click", () => {
-  i = (i + 1) % videos.length;
+// ================= NEXT =================
+function next(){
+  index++;
+  if(index >= videos.length) index = 0;
   render();
+}
+
+// ================= TRACK =================
+function track(id){
+  fetch(`${API}/api/track`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({video_id:id})
+  });
+}
+
+// ================= PROFILE =================
+function openProfile(id){
+  alert("Open Profile: " + id);
+}
+
+// ================= SWIPE =================
+let startY = 0;
+
+document.addEventListener("touchstart", e=>{
+  startY = e.touches[0].clientY;
 });
 
-load();
+document.addEventListener("touchend", e=>{
+  let endY = e.changedTouches[0].clientY;
+
+  if(startY - endY > 50){
+    next();
+  }
+});
+
+loadReels();
+
 </script>
 
 </body>
