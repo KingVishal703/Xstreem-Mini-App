@@ -25,7 +25,7 @@ video {
   object-fit: cover;
 }
 
-/* Profile Bar */
+/* Profile */
 .profile-bar {
   position: absolute;
   bottom: 100px;
@@ -52,7 +52,6 @@ video {
   opacity: 0.8;
 }
 
-/* Loader */
 .loader {
   color: white;
   position: absolute;
@@ -69,7 +68,7 @@ video {
 
 <script>
 
-const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app"; // ✅ your backend
+const API = "https://annoyed-olivia-movies1234-4777a37f.koyeb.app";
 const USER_ID = 123;
 
 let videos = [];
@@ -85,27 +84,37 @@ async function loadReels() {
 
     videos = data.videos || [];
 
-    if(videos.length === 0){
+    if(!videos.length){
       document.getElementById("app").innerHTML = `<div class="loader">No Videos Found</div>`;
       return;
     }
 
-    render();
+    await render();
 
   } catch(err){
     document.getElementById("app").innerHTML = `<div class="loader">API Error</div>`;
   }
 }
 
+// ================= GET VIDEO URL =================
+async function getVideoUrl(file_id){
+  let res = await fetch(`${API}/api/file?file_id=${file_id}`);
+  let data = await res.json();
+  return data.url;
+}
+
 // ================= RENDER =================
-function render(){
+async function render(){
+
   let v = videos[index];
+
+  let videoUrl = await getVideoUrl(v.file_id);
 
   document.getElementById("app").innerHTML = `
     <div class="video-container">
 
       <video autoplay muted playsinline id="video">
-        <source src="${v.url}">
+        <source src="${videoUrl}">
       </video>
 
       <div class="profile-bar" onclick="openProfile('${v.id}')">
@@ -123,10 +132,10 @@ function render(){
 }
 
 // ================= NEXT =================
-function next(){
+async function next(){
   index++;
   if(index >= videos.length) index = 0;
-  render();
+  await render();
 }
 
 // ================= TRACK =================
@@ -140,7 +149,7 @@ function track(id){
 
 // ================= PROFILE =================
 function openProfile(id){
-  alert("Open Profile: " + id);
+  alert("Profile ID: " + id);
 }
 
 // ================= SWIPE =================
